@@ -1,25 +1,124 @@
-# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
-# Central CodeRabbit configuration for the ncz-os organisation.
-language: "en-US"
+# Central CodeRabbit config for every ncz-os project (GitHub copy; same as the GitLab ncz-os/coderabbit config plus the cr-base.* branch pattern used for pre-review PRs) (applies to any repo without its own .coderabbit.yaml).
+# Second-opinion reviewer next to the zoder structured review. Comment only: CodeRabbit never commits,
+# opens MRs, edits MR titles/descriptions or blocks merges.
+language: en-US
+tone_instructions: "Be terse. One finding per comment: the problem and the fix. No praise, no restating what the code does, no style nits that ruff, rustfmt, clippy or shellcheck already enforce."
 early_access: false
 reviews:
-  profile: "chill"
+  profile: chill
   request_changes_workflow: false
-  high_level_summary: true
-  poem: false
-  review_status: true
+  fail_commit_status: false
+  high_level_summary: false
+  high_level_summary_in_walkthrough: true
   collapse_walkthrough: true
+  changed_files_summary: true
+  sequence_diagrams: false
+  estimate_code_review_effort: false
+  poem: false
+  in_progress_fortune: false
+  related_issues: false
+  related_prs: false
+  suggested_labels: false
+  auto_apply_labels: false
+  suggested_reviewers: false
+  auto_assign_reviewers: false
+  review_status: true
+  commit_status: true
+  abort_on_close: true
+  path_filters:
+    - "!**/*.lock"
+    - "!**/Cargo.lock"
+    - "!**/package-lock.json"
+    - "!**/pnpm-lock.yaml"
+    - "!**/uv.lock"
+    - "!**/vendor/**"
+    - "!**/third_party/**"
+    - "!**/node_modules/**"
+    - "!**/target/**"
+    - "!**/dist/**"
+    - "!**/*.min.js"
+    - "!**/*.bundle"
+    - "!**/*.img"
+    - "!**/*.qcow2"
+    - "!**/__snapshots__/**"
+  path_instructions:
+    - path: "**/*.py"
+      instructions: "Python 3.11+. Flag: bare or broad except that hides a failure, subprocess without timeout or with shell=True on untrusted input, secrets or tokens reaching logs, writes under /tmp for build work, git commands that depend on the cwd instead of the repo root."
+    - path: "**/*.rs"
+      instructions: "Flag: unwrap/expect on fallible I/O outside tests, blocking calls inside async code, unsafe without a SAFETY comment, silent error swallowing."
+    - path: "**/*.sh"
+      instructions: "Flag: missing set -euo pipefail, unquoted expansions, rm -rf on a variable that may be empty, broad pkill -f patterns, builds or clones under /tmp or another tmpfs, secrets on a command line."
+    - path: "**/*.patch"
+      instructions: "Kernel or package patch. Check: one logical change per patch, a clear subject, Signed-off-by present, hunks that match the stated base, nothing unrelated mixed in."
+    - path: "**/*.{bb,bbappend,inc,bbclass}"
+      instructions: "Yocto wrynose (6.0, bitbake 2.18). Flag unpinned SRCREV, AUTOREV, missing LIC_FILES_CHKSUM, use of ${WORKDIR} where ${UNPACKDIR} is required."
+    - path: "**/*.md"
+      instructions: "End-user docs must not name internal hostnames, LAN IPs, fleet host names or personal email addresses. Flag them."
   auto_review:
     enabled: true
+    auto_incremental_review: true
     drafts: false
     base_branches:
-      - ".*"
-  path_filters:
-    - "!**/*.png"
-    - "!**/*.svg"
-    - "!**/*.iride"
-    - "!**/golden/**"
-    - "!**/docs/research/**"
-    - "!**/*.lock"
+      - "main"
+      - "cr-base.*"
+      - "master"
+      - "release/.*"
+      - "deploy/.*"
+      - "rollout/.*"
+    ignore_title_keywords:
+      - "WIP"
+      - "[skip review]"
+  finishing_touches:
+    docstrings:
+      enabled: false
+    unit_tests:
+      enabled: false
+    simplify:
+      enabled: false
+    autofix:
+      enabled: false
+    fix_ci:
+      enabled: false
+    resolve_merge_conflict:
+      enabled: false
+  pre_merge_checks:
+    docstrings:
+      mode: "off"
+    title:
+      mode: "off"
+    description:
+      mode: "off"
+    issue_assessment:
+      mode: "off"
+  tools:
+    languagetool:
+      enabled: false
+    markdownlint:
+      enabled: false
+    vale:
+      enabled: false
+    gitleaks:
+      enabled: true
+    trufflehog:
+      enabled: true
+    ruff:
+      enabled: true
+    shellcheck:
+      enabled: true
+    clippy:
+      enabled: true
+    hadolint:
+      enabled: true
+    yamllint:
+      enabled: true
 chat:
   auto_reply: true
+knowledge_base:
+  opt_out: false
+  learnings:
+    scope: global
+  code_guidelines:
+    enabled: true
+    filePatterns:
+      - "**/AGENTS.md"
+      - "**/CONTRIBUTING.md"
