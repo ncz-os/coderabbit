@@ -1,8 +1,8 @@
-# Central CodeRabbit config for every ncz-os project (GitHub copy; same as the GitLab ncz-os/coderabbit config plus the cr-base.* branch pattern used for pre-review PRs) (applies to any repo without its own .coderabbit.yaml).
+# Central CodeRabbit config for every ncz-os project, identical on GitLab (ncz-os/coderabbit) and GitHub (ncz-os/coderabbit) (applies to any repo without its own .coderabbit.yaml).
 # Second-opinion reviewer next to the zoder structured review. Comment only: CodeRabbit never commits,
 # opens MRs, edits MR titles/descriptions or blocks merges.
 language: en-US
-tone_instructions: "Be terse. One finding per comment: the problem and the fix. No praise, no restating what the code does, no style nits that ruff, rustfmt, clippy or shellcheck already enforce."
+tone_instructions: "Terse. One finding per comment: problem and fix. No praise, no restating code, no nits linters catch. Security: neutral hardening wording only (validate X, bound Y); never attack paths, payloads or the words exploit/vulnerability."
 early_access: false
 reviews:
   profile: chill
@@ -23,6 +23,12 @@ reviews:
   suggested_reviewers: false
   auto_assign_reviewers: false
   review_status: true
+  review_info: false
+  review_details: false
+  enable_prompt_for_ai_agents: false
+  slop_detection:
+    enabled: true
+    include_all_authors: false
   commit_status: true
   abort_on_close: true
   path_filters:
@@ -40,6 +46,11 @@ reviews:
     - "!**/*.bundle"
     - "!**/*.img"
     - "!**/*.qcow2"
+    - "!**/*.iso"
+    - "!**/*.deb"
+    - "!**/*.ko"
+    - "!**/*.map"
+    - "!**/go.sum"
     - "!**/__snapshots__/**"
   path_instructions:
     - path: "**/*.py"
@@ -60,8 +71,8 @@ reviews:
     drafts: false
     base_branches:
       - "main"
-      - "cr-base.*"
       - "master"
+      - "cr-base.*"
       - "release/.*"
       - "deploy/.*"
       - "rollout/.*"
@@ -111,7 +122,12 @@ reviews:
       enabled: true
     yamllint:
       enabled: true
+    actionlint:
+      enabled: true
+    zizmor:
+      enabled: true
 chat:
+  art: false
   auto_reply: true
 knowledge_base:
   opt_out: false
